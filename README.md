@@ -22,39 +22,21 @@ The root Maven project aggregates the service module. The service uses Spring AI
 
 ```mermaid
 flowchart LR
-    Config["application.yaml<br/>keywords, prompt, provider, interval"]
-    Prompt["tweet-prompt.st<br/>used by Spring AI implementations"]
-    App["Spring Boot application<br/>startup and scheduling"]
-    Init["StreamInitializer<br/>(currently a stub)"]
-    Runner["AIStreamRunner"]
-    Contract["AIService"]
-    Select{"Selected by<br/>ai-service"}
-    DeepSeek["SpringAIDeepSeekService"]
-    SpringOpenAI["SpringAIOpenAIService"]
-    OpenAI["OpenAIService"]
-    OpenAIClient["OpenAIJavaClientService"]
-    Google["GoogleGenAIService"]
-    Model["Configured AI model/provider"]
-    Logs["Application logs"]
-    Kafka["Kafka<br/>(not connected yet)"]
+    Config["Configuration<br/>keywords, prompt, provider, interval"]
+    App["Spring Boot app<br/>startup and scheduler"]
+    Runner["Scheduled AIStreamRunner"]
+    Service["AIService"]
+    Select{"Configured provider"}
+    Model["AI model"]
+    Logs["Generated tweet<br/>written to logs"]
+    Template["tweet-prompt.st<br/>(Spring AI providers only)"]
 
-    Config --> App
-    App --> Init
-    Init -->|success| Runner
-    Runner --> Contract
-    Contract --> Select
-    Select --> DeepSeek
-    Select --> SpringOpenAI
-    Select --> OpenAI
-    Select --> OpenAIClient
-    Select --> Google
-    Prompt -.-> DeepSeek
-    Prompt -.-> SpringOpenAI
-    Config --> DeepSeek
-    Config --> SpringOpenAI
-    Config --> OpenAI
-    Config --> OpenAIClient
-    Config --> Google
+    Config --> App --> Runner --> Service --> Select
+    Select --> DeepSeek["SpringAIDeepSeekService"]
+    Select --> SpringOpenAI["SpringAIOpenAIService"]
+    Select --> OpenAI["OpenAIService"]
+    Select --> OpenAIClient["OpenAIJavaClientService"]
+    Select --> Google["GoogleGenAIService"]
     DeepSeek --> Model
     SpringOpenAI --> Model
     OpenAI --> Model
@@ -62,10 +44,11 @@ flowchart LR
     Google --> Model
     Model -->|generated text| Runner
     Runner --> Logs
-    Runner -. future destination .-> Kafka
+    Template -.-> DeepSeek
+    Template -.-> SpringOpenAI
 ```
 
-`AIService` is the provider boundary: Spring activates the implementation whose `@ConditionalOnProperty` value matches `ai-generated-tweet-to-kafka-service.ai-service`. Only one provider is intended to be active. The default, `SpringAI-DeepSeek`, uses Spring AI's Ollama chat client and the local model configured in `application.yaml`. The Spring AI implementations load `tweet-prompt.st`; the other implementations build a prompt from the configured text and keyword list. Kafka is shown as a future destination only; there is no Kafka client or publishing step in the current flow.
+The `ai-service` setting selects one implementation behind the `AIService` interface: `SpringAIDeepSeekService`, `SpringAIOpenAIService`, `OpenAIService`, `OpenAIJavaClientService`, or `GoogleGenAIService`. Only the configured provider is active. The default provider uses Spring AI with the configured local Ollama model. The Spring AI implementations use `tweet-prompt.st`; other providers build their prompt from configuration. Kafka publishing is not implemented.
 
 ## Functional flow
 
