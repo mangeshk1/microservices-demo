@@ -1,0 +1,52 @@
+ai-generated-tweet-to-kafka-service:
+  streaming-data-keywords:
+    - Java
+    - Microservices
+    - Spring
+    - Kafka
+    - Elasticsearch
+  ai-service: SpringAI-DeepSeek
+  scheduler-duration-sec: 30
+  prompt: "Generate a json with 4 elements called createdAt, id, text, user. The user element also has a nested json element called id. For createdAt use a date in format 'EEE MMM dd HH:mm:ss zzz yyyy', example date would be 'Fri Oct 06 14:32:25 UTC 2026. For id use a java long value. For text use a string including one or more of the keywords: {keywords}. For user.id use a java long value. The json should be in a single line. Do not write anything in the response other than text. That means omit ```json part in the response and any other explanation. Do not use new lines in the response. Do not use L letter at the end of long values. Only use 1 result in the response."
+  keywords-placeholder: '{keywords}'
+  open-ai:
+    url: "https://api.openai.com/v1/chat/completions"
+    api-key: ${OPENAI_API_KEY}
+    content-type: "application/json"
+    model: "gpt-4o-mini"
+    max-completions-tokens: 150
+    temperature: 1
+    messages:
+      - role: "user"
+        content:
+          - type: "text"
+  google-gen-ai:
+    api-key: ${GOOGLE_VERTEX_API_KEY}
+    modelName: "gemini-3.5-flash-lite"
+    max-output-tokens: 150
+    temperature: 1
+    candidate-count: 1
+
+
+spring:
+  ai:
+    openai:
+      #api-key: ${OPENAI_API_KEY}
+      #base-url: "https://api.openai.com"
+      api-key: ${DEEPSEEK_API_KEY}
+      base-url: "https://api.deepseek.com"
+      chat:
+        model: "deepseek-flash"
+        temperature: 1
+        max-tokens: 150
+#        options:
+#          model: "gpt-4o-mini"
+#          temperature: 1
+#          max-tokens: 150
+    ollama:
+      base-url: "http://localhost:11434"
+      chat:
+        model: "deepseek-r1:8b"
+        temperature: 1
+        max-new-tokens: 150
+

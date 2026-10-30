@@ -13,25 +13,56 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>microservices-demo</name>
 	<description>Demo project for Spring Boot microservices</description>
+	<modules>
+		<module>ai-generated-tweet-to-kafka-service</module>
+	</modules>
 
 	<packaging>pom</packaging>
 
 	<properties>
 		<java.version>25</java.version>
-		<maven.compiler-plugin.version>3.10.0</maven.compiler-plugin.version>
+		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+		<lombok.version>1.18.48</lombok.version>
+		<httpclient5.version>5.6.4</httpclient5.version>
+		<openai-java.version>4.80.0</openai-java.version>
+		<google-genai.version>1.79.0</google-genai.version>
+		<spring-ai.version>2.0.2</spring-ai.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter</artifactId>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+				<scope>provided</scope>
 			</dependency>
-
 			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-test</artifactId>
-				<scope>test</scope>
+				<groupId>org.apache.httpcomponents.client5</groupId>
+				<artifactId>httpclient5</artifactId>
+				<version>${httpclient5.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.openai</groupId>
+				<artifactId>openai-java</artifactId>
+				<version>${openai-java.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.genai</groupId>
+				<artifactId>google-genai</artifactId>
+				<version>${google-genai.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-starter-model-openai</artifactId>
+				<version>${spring-ai.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-bom</artifactId>
+				<version>${spring-ai.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -41,9 +72,16 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler-plugin.version}</version>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<release>25</release>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 		</plugins>
